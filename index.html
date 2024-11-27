@@ -108,8 +108,8 @@
                             <tr>
                                 <th>Line Number</th>
                                 <th>Countdown (min)</th>
-                                <th>From</th>
                                 <th>To</th>
+                                <th>From</th>
                             </tr>
                         </thead>
                     `;
@@ -123,8 +123,8 @@
                         row.innerHTML = `
                             <td>${item.servingLine?.number || 'N/A'}</td>
                             <td>${item.countdown}</td>
-                            <td>${item.servingLine?.directionFrom || 'N/A'}</td>
                             <td>${item.servingLine?.direction || 'N/A'}</td>
+                            <td>${item.servingLine?.directionFrom || 'N/A'}</td>
                         `;
                         tableBody.appendChild(row);
                     });
