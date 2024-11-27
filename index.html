@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KVV Timetable</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="data-display">
+        <!-- Data will be displayed here -->
+    </div>
+
+    <script>
+        const stops = [
+            {
+                kvvSName: "KA Durlacher Tor/KIT-Campus Süd",
+                name_dm: "7000003"
+            },
+            {
+                kvvSName: "Mathystraße",
+                name_dm: "7000062"
+            },
+            {
+                kvvSName: "Karlstor/Bundesgerichtshof",
+                name_dm: "7000061"
+            },
+            {
+                kvvSName: "Yorckstraße",
+                name_dm: "7000041:$40"
+            }
+        ];
+
+        async function fetchStopData(stop) {
+            const apiUrl = `https://projekte.kvv-efa.de/sl3-alone/XSLT_DM_REQUEST?outputFormat=JSON&coordOutputFormat=WGS84[dd.ddddd]&depType=stopEvents&locationServerActive=1&mode=direct&name_dm=${stop.name_dm}&type_dm=stop&useOnlyStops=1&useRealtime=1&limit=10`;
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching data for ${stop.kvvSName}:`, error);
+                return null;
+            }
+        }
+
+        async function fetchAndDisplayAllStops() {
+            const dataDisplay = document.getElementById('data-display');
+            dataDisplay.innerHTML = ''; // Clear previous data
+
+            for (const stop of stops) {
+                const stopData = await fetchStopData(stop);
+
+                if (stopData) {
+                    // Create a table for this stop
+                    const stopTable = document.createElement('table');
+                    const tableHeader = `
+                        <thead>
+                            <tr>
+                                <th colspan="3">${stop.kvvSName}</th>
+                            </tr>
+                            <tr>
+                                <th>Stop Name</th>
+                                <th>Countdown (min)</th>
+                                <th>Line Number</th>
+                            </tr>
+                        </thead>
+                    `;
+                    stopTable.innerHTML = tableHeader;
+
+                    const tableBody = document.createElement('tbody');
+
+                    // Add rows for each departure
+                    stopData.departureList.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.stopName}</td>
+                            <td>${item.countdown}</td>
+                            <td>${item.servingLine?.number || 'N/A'}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    stopTable.appendChild(tableBody);
+                    dataDisplay.appendChild(stopTable);
+                } else {
+                    // Show an error message
+                    const errorMessage = document.createElement('p');
+                    errorMessage.textContent = `Error fetching data for ${stop.kvvSName}`;
+                    errorMessage.className = 'error';
+                    dataDisplay.appendChild(errorMessage);
+                }
+            }
+        }
+
+        // Fetch data immediately and every 15 seconds
+        fetchAndDisplayAllStops();
+        setInterval(fetchAndDisplayAllStops, 15000);
+    </script>
+</body>
+</html>
