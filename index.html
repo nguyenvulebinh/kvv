@@ -48,22 +48,23 @@
 
     <script>
         const stops = [
-            {
-                kvvSName: "KA Durlacher Tor/KIT-Campus Süd",
-                name_dm: "7000003" 
-            },
-            {
+        {
                 kvvSName: "Mathystraße",
                 name_dm: "7000062"
-            },
+            },    
             {
-                kvvSName: "Karlstor/Bundesgerichtshof",
+                kvvSName: "Karlstor/Bundesgerichtshof (đoạn EDEKA)",
                 name_dm: "7000061"
             },
             {
-                kvvSName: "Yorckstraße",
+                kvvSName: "Yorckstraße (trường Lila)",
                 name_dm: "7000041:$40"
+            },
+            {
+                kvvSName: "KA Durlacher Tor/KIT-Campus Süd",
+                name_dm: "7000003" 
             }
+
         ];
 
         async function fetchStopData(stop) {
@@ -102,12 +103,13 @@
                     const tableHeader = `
                         <thead>
                             <tr>
-                                <th colspan="3">${stop.kvvSName}</th>
+                                <th colspan="4">${stop.kvvSName}</th>
                             </tr>
                             <tr>
-                                <th>Stop Name</th>
-                                <th>Countdown (min)</th>
                                 <th>Line Number</th>
+                                <th>Countdown (min)</th>
+                                <th>From</th>
+                                <th>To</th>
                             </tr>
                         </thead>
                     `;
@@ -119,9 +121,10 @@
                     data.departureList.forEach(item => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${item.stopName}</td>
-                            <td>${item.countdown}</td>
                             <td>${item.servingLine?.number || 'N/A'}</td>
+                            <td>${item.countdown}</td>
+                            <td>${item.servingLine?.directionFrom || 'N/A'}</td>
+                            <td>${item.servingLine?.direction || 'N/A'}</td>
                         `;
                         tableBody.appendChild(row);
                     });
