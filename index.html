@@ -39,6 +39,10 @@
             color: #666;
             text-align: center;
         }
+
+        .centered {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -106,8 +110,8 @@
                                 <th colspan="3">${stop.kvvSName}</th>
                             </tr>
                             <tr>
-                                <th>Line Number</th>
-                                <th>Countdown (min)</th>
+                                <th class="centered" >Line Number</th>
+                                <th class="centered" >Countdown (min)</th>
                                 <th>To</th>
                             </tr>
                         </thead>
@@ -120,8 +124,8 @@
                     data.departureList.forEach(item => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${item.servingLine?.number || 'N/A'}</td>
-                            <td>${item.countdown}</td>
+                            <td class="centered" >${item.servingLine?.number || 'N/A'}</td>
+                            <td class="centered" >${item.countdown}</td>
                             <td>${item.servingLine?.direction || 'N/A'}</td>
                         `;
                         tableBody.appendChild(row);
